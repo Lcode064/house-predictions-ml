@@ -8,18 +8,17 @@ app = FastAPI()
 # Configure CORS settings
 origins = [
     "http://localhost",
-    "http://localhost:5500",  # Add the URL where your HTML file is served
+    "http://localhost:5500",
 ]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Use "*" for any origin during development
+    allow_origins=["*"], 
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Load your linear regression model from file
 model = joblib.load('mymlmodel.pkl')
 
 class Item(BaseModel):
