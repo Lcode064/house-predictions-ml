@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>House Price Prediction</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin: 10px 0;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            margin: 8px 0;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #4caf50;
+            color: white;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #predictionResult {
+            margin-top: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        #errorMessage {
+            color: red;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>House Price Prediction</h1>
+    
+    <!-- Input fields for features -->
+    <label for="area">Area (in square feet):</label>
+    <input type="number" id="area" placeholder="Enter area">
+
+    <label for="bedrooms">Bedrooms:</label>
+    <input type="number" id="bedrooms" placeholder="Enter number of bedrooms">
+
+    <label for="bathrooms">Bathrooms:</label>
+    <input type="number" id="bathrooms" placeholder="Enter number of bathrooms">
+
+    <label for="stories">Stories:</label>
+    <input type="number" id="stories" placeholder="Enter number of stories">
+
+    <label for="parking">Parking:</label>
+    <input type="number" id="parking" placeholder="Enter parking spaces">
+
+    <!-- Add more input fields for other features as needed -->
+
+    <button onclick="predictPrice()">Predict Price</button>
+
+    <p id="predictionResult"></p>
+    <p id="errorMessage"></p>
+
+    <script>
+        async function predictPrice() {
+            const areaInput = document.getElementById('area');
+            const bedroomsInput = document.getElementById('bedrooms');
+            const bathroomsInput = document.getElementById('bathrooms');
+            const storiesInput = document.getElementById('stories');
+            const parkingInput = document.getElementById('parking');
+    
+            const predictionResult = document.getElementById('predictionResult');
+            const errorMessage = document.getElementById('errorMessage');
+    
+            // Clear previous results and errors
+            predictionResult.innerText = '';
+            errorMessage.innerText = '';
+    
+            // Get user inputs
+            const area = parseFloat(areaInput.value);
+            const bedrooms = parseFloat(bedroomsInput.value);
+            const bathrooms = parseFloat(bathroomsInput.value);
+            const stories = parseFloat(storiesInput.value);
+            const parking = parseFloat(parkingInput.value);
+    
+            // Check if inputs are valid
+            if (isNaN(area) || isNaN(bedrooms) || isNaN(bathrooms) || isNaN(stories) || isNaN(parking)) {
+                errorMessage.innerText = 'Invalid input. Please enter valid numerical values for all features.';
+                return;
+            }
+    
+            try {
+                const response = await fetch('http://127.0.0.1:8000/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        features: [area, bedrooms, bathrooms, stories, parking]
+                    }),
+                });
+    
+                if (!response.ok) {
+                    throw new Error(`Server returned ${response.status} - ${response.statusText}`);
+                }
+    
+                const result = await response.json();
+                predictionResult.innerText = `Predicted Price:M ${result.prediction[0][0].toFixed(2)}`;
+                
+            } catch (error) {
+                errorMessage.innerText = `Error: ${error.message}`;
+            }
+        }
+    </script>
+    
+</body>
+</html>
